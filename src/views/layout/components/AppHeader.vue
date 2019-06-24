@@ -3,6 +3,7 @@
         <div class="app-top">
             <el-row :gutter="20">
                 <el-col :span="10">
+                    <i class="el-icon-s-fold el-icon-openoff"></i>
                     <span class="app-title">江苏传智播客教育科技股份有限公司</span>
                 </el-col>
                 <el-col :span="5" :offset="8">
@@ -63,6 +64,9 @@ export default {
 <style lang="less" scoped>
 #app-header{
     .app-top{
+        .el-icon-openoff{
+            font-size: 18px;
+        }
         .app-title{
             line-height: 60px;
         }

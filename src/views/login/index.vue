@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 // 引入极检JavaScript SDK文件，通过window.initgeetest
 import '@/vendor/gt.js'
 import { setUser } from '@/utils/auth.js'
@@ -67,9 +67,9 @@ export default {
       })
     },
     handelCheckbox () {
-      axios({
+      this.$http({
         method: 'POST',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+        url: `/authorizations`,
         data: this.form
       }).then(res => {
         const userInfo = res.data.data
@@ -98,9 +98,9 @@ export default {
     },
     handleGeetest () {
       const { mobile } = this.form
-      axios({
+      this.$http({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        url: `/captchas/${mobile}`
       }).then(res => {
         const { data } = res.data
         window.initGeetest({
@@ -119,9 +119,9 @@ export default {
               geetest_seccode: seccode,
               geetest_validate: validate
             } = captchaObj.getValidate()
-            axios({
+            this.$http({
               method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+              url: `/sms/codes/${mobile}`,
               params: {
                 challenge,
                 seccode,
