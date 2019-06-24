@@ -71,6 +71,9 @@ export default {
         url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
         data: this.form
       }).then(res => {
+        const userInfo = res.data.data
+        console.log(userInfo)
+        window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         this.$message({
           message: '登录成功',
           type: 'success'

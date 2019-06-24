@@ -1,8 +1,16 @@
 <template>
-    <div>
-        <p>App layout</p>
-        <AppAside/>
-        <AppHeader/>
+    <div id="frist">
+        <el-container>
+          <el-aside width="200px">
+            <AppAside/>
+          </el-aside>
+          <el-container>
+            <el-header width="50px">
+               <AppHeader/>
+            </el-header>
+            <el-main>Main</el-main>
+          </el-container>
+        </el-container>
     </div>
 </template>
 
@@ -13,12 +21,24 @@ export default {
   components: {
     AppAside,
     AppHeader
-  },
-  data () {
-
   }
 }
 </script>
 
 <style lang="less" scoped>
+  #frist{
+    height: 100%;
+  }
+  .el-container{
+    height: 100%;
+  }
+  .el-header{
+    background-color: #fff;
+  }
+  .el-aside {
+    background-color: rgb(50, 55, 69);
+  }
+  .el-main {
+    background-color: rgb(242, 243, 245);
+  }
 </style>
