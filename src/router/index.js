@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import nprogress from 'nprogress'
+import { getUser } from '@/utils/auth'
 Vue.use(Router)
 
 const router = new Router({
@@ -44,7 +45,7 @@ router.beforeEach((to, from, next) => {
   // 加载进度条
   nprogress.start()
   // 获取localStorage存储的登录信息，判断是否登录
-  const userInfo = window.localStorage.getItem('user_info')
+  const userInfo = getUser()
   // 未登录状态时，如果不是登录状态需要先登录
   if (to.path !== '/login') {
     // 未登录状态时

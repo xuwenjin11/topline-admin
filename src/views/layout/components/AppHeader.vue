@@ -26,12 +26,13 @@
 </template>
 
 <script>
+import { getUser, removeUser } from '@/utils/auth.js'
 export default {
   data () {
     return { userInfo: {} }
   },
   created () {
-    this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+    this.userInfo = getUser()
     console.log(this.userInfo)
   },
   methods: {
@@ -41,7 +42,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        window.localStorage.removeItem('user_info')
+        removeUser()
         this.$router.push('/login')
         this.$message({
           type: 'success',

@@ -33,6 +33,7 @@
 import axios from 'axios'
 // 引入极检JavaScript SDK文件，通过window.initgeetest
 import '@/vendor/gt.js'
+import { setUser } from '@/utils/auth.js'
 const initCodeTimeSeconds = 60
 export default {
   data () {
@@ -73,7 +74,7 @@ export default {
       }).then(res => {
         const userInfo = res.data.data
         console.log(userInfo)
-        window.localStorage.setItem('user_info', JSON.stringify(userInfo))
+        setUser(userInfo)
         this.$message({
           message: '登录成功',
           type: 'success'
