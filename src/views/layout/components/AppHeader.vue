@@ -5,16 +5,18 @@
                 <el-col :span="10">
                     <span class="app-title">江苏传智播客教育科技股份有限公司</span>
                 </el-col>
-                <el-col :span="5" :offset="5">
-                    <img src="userInfo.photo" alt="" width="35px">
-                    <el-dropdown>
+                <el-col :span="5" :offset="8">
+                        <span class="heard-img">
+                            <img :src="userInfo.photo" alt="" width="35px">
+                        </span>
+                    <el-dropdown trigger="click" >
                         <span class="el-dropdown-link">
-                            {{userInfo.name}}<i class="el-icon-arrow-down el-icon--right"></i>
+                            {{ userInfo.name }}<i class="el-icon-caret-bottom el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>个人信息</el-dropdown-item>
                             <el-dropdown-item>Git地址</el-dropdown-item>
-                            <el-dropdown-item>退出</el-dropdown-item>
+                            <el-dropdown-item @click.native=handleLogout>退出</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </el-col>
@@ -30,6 +32,29 @@ export default {
   },
   created () {
     this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+    console.log(this.userInfo)
+  },
+  methods: {
+    handleLogout () {
+      this.$confirm('是否确定退出?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        window.localStorage.removeItem('user_info')
+        this.$router.push('/login')
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      }
+      )
+    }
   }
 }
 </script>
@@ -39,6 +64,11 @@ export default {
     .app-top{
         .app-title{
             line-height: 60px;
+        }
+        .heard-img{
+            img{
+                margin-top: 10px;
+            }
         }
     }
 }

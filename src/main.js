@@ -7,6 +7,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入less公共样式
 import './styles/index.less'
+// 引入进度条样式
+import '../node_modules/nprogress/nprogress.css'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 new Vue({

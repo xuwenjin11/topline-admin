@@ -8,7 +8,9 @@
             <el-header width="50px">
                <AppHeader/>
             </el-header>
-            <el-main>Main</el-main>
+            <el-main>
+              <router-view />
+            </el-main>
           </el-container>
         </el-container>
     </div>
