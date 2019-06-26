@@ -11,7 +11,7 @@ import './styles/index.less'
 import '../node_modules/nprogress/nprogress.css'
 // 配置axios,使其可以在任何文件都可以使用，配置路径
 import axios from 'axios'
-axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
+axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0'
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false

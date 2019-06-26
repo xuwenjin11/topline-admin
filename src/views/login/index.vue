@@ -32,8 +32,9 @@
 <script>
 // import axios from 'axios'
 // 引入极检JavaScript SDK文件，通过window.initgeetest
-import '@/vendor/gt.js'
+// import '@/vendor/gt.js'
 import { setUser } from '@/utils/auth.js'
+import initGeetest from '@/utils/init-geetest.js'
 const initCodeTimeSeconds = 60
 export default {
   data () {
@@ -58,22 +59,27 @@ export default {
     }
   },
   methods: {
+    // 判断表单是否都填入信息
     handleLogin (form) {
       this.$refs['form'].validate((valid) => {
         if (!valid) {
           return
         }
+        // 当表单内容都填写完成实现登录功能
         this.handelCheckbox()
       })
     },
-    handelCheckbox () {
-      this.$http({
-        method: 'POST',
-        url: `/authorizations`,
-        data: this.form
-      }).then(res => {
+    // 登录功能
+    async handelCheckbox () {
+      try {
+        // 在try中将可能出错的代码放入这里
+        const res = await this.$http({
+          method: 'POST',
+          url: `/authorizations`,
+          data: this.form
+        })
         const userInfo = res.data.data
-        console.log(userInfo)
+        // console.log(userInfo)
         setUser(userInfo)
         this.$message({
           message: '登录成功',
@@ -82,10 +88,10 @@ export default {
         this.$router.push({
           name: 'home'
         })
-      })
-        .catch((e) => {
-          this.$message.error('登录失败，手机号或密码错误')
-        })
+      } catch (err) {
+        // 出现的错误信息会进入这里
+        this.$message.error('登录失败，手机号或密码错误')
+      }
     },
     handleSendCode () {
       // 验证手机号是否正确
@@ -96,47 +102,83 @@ export default {
         this.handleGeetest()
       })
     },
-    handleGeetest () {
+    // 进行极验验证
+    async handleGeetest () {
       const { mobile } = this.form
-      this.$http({
+      const res = await this.$http({
         method: 'GET',
         url: `/captchas/${mobile}`
-      }).then(res => {
-        const { data } = res.data
-        window.initGeetest({
-          gt: data.gt,
-          challenge: data.challenge,
-          offline: !data.success,
-          new_captcha: data.new_captcha,
-          product: 'bind'
-        }, captchaObj => {
-          // 这里可以调用验证实例 captchaObj 的实例方法
-          captchaObj.onReady(() => {
-            captchaObj.verify()
-          }).onSuccess(() => {
-            const {
-              geetest_challenge: challenge,
-              geetest_seccode: seccode,
-              geetest_validate: validate
-            } = captchaObj.getValidate()
-            this.$http({
-              method: 'GET',
-              url: `/sms/codes/${mobile}`,
-              params: {
-                challenge,
-                seccode,
-                validate
-              }
-            }).then(res => {
-              // 发送短信，开始倒计时
-              this.codeCountDown()
-            })
-          }).onError(function () {
-            // your code
-          })
+      })
+      const { data } = res.data
+      const captchaObj = await initGeetest({
+        gt: data.gt,
+        challenge: data.challenge,
+        offline: !data.success,
+        new_captcha: data.new_captcha,
+        product: 'bind'
+      })
+      captchaObj.onReady(() => {
+        captchaObj.verify()
+      }).onSuccess(async () => {
+        const {
+          geetest_challenge: challenge,
+          geetest_seccode: seccode,
+          geetest_validate: validate
+        } = captchaObj.getValidate()
+        await this.$http({
+          method: 'GET',
+          url: `/sms/codes/${mobile}`,
+          params: {
+            challenge,
+            seccode,
+            validate
+          }
         })
+        this.codeCountDown()
       })
     },
+    // // 进行极验验证
+    // handleGeetest () {
+    //   const { mobile } = this.form
+    //   this.$http({
+    //     method: 'GET',
+    //     url: `/captchas/${mobile}`
+    //   }).then(res => {
+    //     const { data } = res.data
+    //     window.initGeetest({
+    //       gt: data.gt,
+    //       challenge: data.challenge,
+    //       offline: !data.success,
+    //       new_captcha: data.new_captcha,
+    //       product: 'bind'
+    //     }, captchaObj => {
+    //       // 这里可以调用验证实例 captchaObj 的实例方法
+    //       captchaObj.onReady(() => {
+    //         captchaObj.verify()
+    //       }).onSuccess(() => {
+    //         const {
+    //           geetest_challenge: challenge,
+    //           geetest_seccode: seccode,
+    //           geetest_validate: validate
+    //         } = captchaObj.getValidate()
+    //         this.$http({
+    //           method: 'GET',
+    //           url: `/sms/codes/${mobile}`,
+    //           params: {
+    //             challenge,
+    //             seccode,
+    //             validate
+    //           }
+    //         }).then(res => {
+    //           // 发送短信，开始倒计时
+    //           this.codeCountDown()
+    //         })
+    //       }).onError(function () {
+    //         // your code
+    //       })
+    //     })
+    //   })
+    // },
     // 倒计时计时器
     codeCountDown () {
       this.codeTimer = window.setInterval(() => {
