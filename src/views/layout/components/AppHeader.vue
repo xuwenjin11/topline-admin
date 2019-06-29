@@ -33,10 +33,12 @@ export default {
     return { userInfo: {} }
   },
   created () {
+    // 获取本地存储
     this.userInfo = getUser()
-    console.log(this.userInfo)
+    // console.log(this.userInfo)
   },
   methods: {
+    // 退出功能
     handleLogout () {
       this.$confirm('是否确定退出?', '提示', {
         confirmButtonText: '确定',

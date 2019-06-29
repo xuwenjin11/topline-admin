@@ -18,7 +18,7 @@ const router = new Router({
     // },
     {
       name: 'layout',
-      path: '/layout',
+      path: '/',
       component: () => import('@/views/layout'),
       children: [
         {
@@ -30,6 +30,11 @@ const router = new Router({
           name: 'publish',
           path: '/publish',
           component: () => import('@/views/publish')
+        },
+        {
+          name: 'article',
+          path: '/article',
+          component: () => import('@/views/article')
         }
       ]
     },
@@ -48,6 +53,8 @@ router.beforeEach((to, from, next) => {
   const userInfo = getUser()
   // 未登录状态时，如果不是登录状态需要先登录
   if (to.path !== '/login') {
+    // 当在登录页面时，想要跳转到其他页面时，进度条停止加载
+    nprogress.done()
     // 未登录状态时
     if (!userInfo) {
       next({ name: 'login' })
@@ -63,6 +70,7 @@ router.beforeEach((to, from, next) => {
       window.location.reload()
     }
   }
+  // 246810万能验证码
   // 导航守卫结束后关闭进度条
   router.afterEach((to, from) => {
     nprogress.done()

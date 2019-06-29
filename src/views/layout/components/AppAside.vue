@@ -8,6 +8,7 @@
         <div class="aside-wrap">
             <el-row class="tac">
                 <el-col>
+                    <!-- 根据路由进行跳转需要将路由进行属性绑定，与需要导航的页面进行练习 -->
                     <el-menu
                     default-active="2"
                     class="el-menu-vertical-demo"
@@ -15,6 +16,7 @@
                     @close="handleClose"
                     background-color="#545c64"
                     text-color="#fff"
+                    :router="true"
                     active-text-color="#ffd04b">
                      <el-menu-item index="/">
                         <i class="el-icon-s-home"></i>
@@ -27,12 +29,12 @@
                         </template>
                         <el-menu-item-group>
                             <el-menu-item index="/publish">发布文章</el-menu-item>
-                            <el-menu-item index="2-2">内容列表</el-menu-item>
+                            <el-menu-item index="/article">内容列表</el-menu-item>
                             <el-menu-item index="2-3">评论列表</el-menu-item>
                             <el-menu-item index="2-4">素材管理</el-menu-item>
                         </el-menu-item-group>
-                        </el-submenu>
-                    <el-submenu index="3">
+                    </el-submenu>
+                     <el-submenu index="3">
                         <template slot="title">
                         <i class="el-icon-s-promotion"></i>
                         <span>粉丝管理</span>
