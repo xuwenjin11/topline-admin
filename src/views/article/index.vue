@@ -3,11 +3,40 @@
         <div class="a-card">
             <el-card class="box-card">
             <div slot="header" class="clearfix">
-                <span>卡片名称</span>
+                <span>数据删选</span>
                 <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
             </div>
-            <div v-for="o in 4" :key="o" class="text item">
-                {{'列表内容 ' + o }}
+            <div class="dataFilter">
+               <el-form ref="form" :model="filterParams" label-width="80px">
+                 <el-form-item label="状态">
+                  <el-radio-group v-model="filterParams.status" label="状态">
+                    <el-radio label="">全部</el-radio>
+                    <el-radio v-for="(item,index) in statTypes" :key="index">{{item.label}}</el-radio>
+                    <!-- <el-radio :label="6">待审核</el-radio>
+                    <el-radio :label="9">审核失败</el-radio>
+                    <el-radio :label="9">审核成功</el-radio> -->
+                  </el-radio-group>
+                 </el-form-item>
+              <el-form-item label="频道">
+               <el-select v-model="filterParams.channel_id" clearable placeholder="请选择活动区域">
+                <el-option v-for="k in channels" :key="k.id" :label="k.name" :value="k.id"></el-option>
+                <!-- <el-option label="JAVA" value="java"></el-option> -->
+              </el-select>
+              </el-form-item>
+              <el-form-item label="时间选择">
+                 <el-time-picker
+                  is-range
+                  v-model="filterParams.begin_pubdate"
+                  range-separator="至"
+                  start-placeholder="开始时间"
+                  end-placeholder="结束时间"
+                  placeholder="选择时间范围">
+                </el-time-picker>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="dataSubmit">查询</el-button>
+              </el-form-item>
+               </el-form>
             </div>
             </el-card>
         </div>
@@ -51,7 +80,7 @@
                      width="180">
                     <el-row>
                     <el-button size="mini" type="warning" plain>修改</el-button>
-                    <el-button size="mini" type="danger"  @click="handleDelete" plain>删除</el-button>
+                    <el-button size="mini" type="danger" plain>删除</el-button>
                     </el-row>
                     </el-table-column>
                 </el-table>
@@ -74,9 +103,11 @@
 export default {
   created () {
     this.getArticle()
+    this.handleChannels()
   },
   data () {
     return {
+      radio: 3,
       articles: [],
       pagloading: false,
       page: 1,
@@ -103,7 +134,14 @@ export default {
           type: 'danger',
           label: '已删除'
         }
-      ]
+      ],
+      filterParams: {
+        status: '', // 状态
+        channel_id: '', // 频道id
+        begin_pubdate: '', // 开始时间
+        end_pubdate: '' // 结束时间
+      },
+      channels: []
     }
   },
   methods: {
@@ -131,6 +169,22 @@ export default {
       // console.log(page)
       this.page = page
       this.getArticle()
+    },
+    dataSubmit () {
+      console.log(22)
+    },
+    // 获取文章频道
+    async handleChannels () {
+      try {
+        const data = await this.$http({
+          method: 'GET',
+          url: '/channels'
+        })
+        // console.log(data)
+        this.channels = data.channels
+      } catch (err) {
+        this.$message.error('获取频道数据失败')
+      }
     }
     // 删除操作
     // async handleDelete () {
