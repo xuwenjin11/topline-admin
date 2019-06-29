@@ -11,7 +11,7 @@
                  <el-form-item label="状态">
                   <el-radio-group v-model="filterParams.status" label="状态">
                     <el-radio label="">全部</el-radio>
-                    <el-radio v-for="(item,index) in statTypes" :key="index">{{item.label}}</el-radio>
+                    <el-radio v-for="(item,index) in statTypes" :key="index" :label="index">{{item.label}}</el-radio>
                     <!-- <el-radio :label="6">待审核</el-radio>
                     <el-radio :label="9">审核失败</el-radio>
                     <el-radio :label="9">审核成功</el-radio> -->
@@ -24,17 +24,18 @@
               </el-select>
               </el-form-item>
               <el-form-item label="时间选择">
-                 <el-time-picker
-                  is-range
-                  v-model="filterParams.begin_pubdate"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"
-                  placeholder="选择时间范围">
-                </el-time-picker>
+                   <el-date-picker
+                    value-format="yyyy-MM-dd"
+                    v-model="range_date"
+                    @change="handleDatechange"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+                  </el-date-picker>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="dataSubmit">查询</el-button>
+                <el-button type="primary" @click="handleFilter" :loading="pagloading">查询</el-button>
               </el-form-item>
                </el-form>
             </div>
@@ -84,11 +85,13 @@
                     </el-row>
                     </el-table-column>
                 </el-table>
+                <!-- current-page 当前高亮的页码，需要和数据保持同步，否则可能会出现数据页码改变，视图页码没变的情况 -->
             <el-pagination
             class="article-pag"
                 background
                 layout="prev, pager, next"
                 :page-size="perSize"
+                :current-page="page"
                 :loading="pagloading"
                 :disabled="pagloading"
                 :total="totalCount"
@@ -141,7 +144,8 @@ export default {
         begin_pubdate: '', // 开始时间
         end_pubdate: '' // 结束时间
       },
-      channels: []
+      channels: [],
+      range_date: ''
     }
   },
   methods: {
@@ -155,7 +159,7 @@ export default {
         url: '/articles',
         params: {
           page: this.page, // 页码
-          per_page: this.perSize// 每页大小
+          per_page: this.perSize // 每页大小
         }
       })
       // 打印获取数据进行操作
@@ -170,8 +174,10 @@ export default {
       this.page = page
       this.getArticle()
     },
-    dataSubmit () {
-      console.log(22)
+    // 查询文章
+    handleFilter () {
+      this.page = 1
+      this.loadArticles()
     },
     // 获取文章频道
     async handleChannels () {
@@ -185,6 +191,43 @@ export default {
       } catch (err) {
         this.$message.error('获取频道数据失败')
       }
+    },
+    // 加载文章
+    async loadArticles () {
+      // 请求开始，加载 loading
+      this.pagloading = true
+      // 除了登录相关接口之后，其它接口都必须在请求头中通过 Authorization 字段提供用户 token
+      // 当我们登录成功，服务端会生成一个 token 令牌，放到用户信息中
+      // 去除无用数据字段
+      const filterData = {}
+      for (let key in this.filterParams) {
+        const item = this.filterParams[key]
+        if (item !== null && item !== undefined && item !== '') {
+          filterData[key] = item
+        }
+        // 数据中的 0 参与布尔值运算是 false。不会进来
+        // if (item) {
+        //   filterData[key] = item
+        // }
+      }
+      const data = await this.$http({
+        method: 'GET',
+        url: '/articles',
+        params: {
+          page: this.page, // 页码
+          per_page: this.pageSize, // 每页大小
+          ...filterData
+        }
+      })
+      this.articles = data.results
+      this.totalCount = data.total_count
+      // 请求结束，停止 loading
+      this.pagloading = false
+    },
+    handleDatechange (value) {
+      console.log(value)
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
     }
     // 删除操作
     // async handleDelete () {
