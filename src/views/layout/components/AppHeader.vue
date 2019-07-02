@@ -8,11 +8,11 @@
                 </el-col>
                 <el-col :span="5" :offset="8">
                         <span class="heard-img">
-                            <img :src="userInfo.photo" alt="" width="35px">
+                            <img :src="$store.state.user.photo" alt="" width="35px">
                         </span>
                     <el-dropdown trigger="click" >
                         <span class="el-dropdown-link">
-                            {{ userInfo.name }}<i class="el-icon-caret-bottom el-icon--right"></i>
+                            {{ $store.state.user.name }}<i class="el-icon-caret-bottom el-icon--right"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>个人信息</el-dropdown-item>
@@ -27,14 +27,16 @@
 </template>
 
 <script>
-import { getUser, removeUser } from '@/utils/auth.js'
+import { removeUser } from '@/utils/auth.js'
 export default {
   data () {
-    return { userInfo: {} }
+    return {
+      // userInfo: {}
+    }
   },
   created () {
     // 获取本地存储
-    this.userInfo = getUser()
+    // this.userInfo = getUser()
     // console.log(this.userInfo)
   },
   methods: {
